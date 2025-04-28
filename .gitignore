@@ -1,11 +1,8 @@
 # Python virtual environments
 venv/
-env/
+.venv/
 ENV/
-.env
-.venv
-env.bak/
-venv.bak/
+env/
 
 # Python bytecode
 __pycache__/
@@ -30,8 +27,9 @@ build/
 *.ckpt*
 *.pth
 *.pt
-*/models/*.bin
-*/models/*.onnx
+*.bin
+*.onnx
+*.dylib
 
 # Logs and databases
 *.log
@@ -46,10 +44,3 @@ build/
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-# IDE specific files
-.idea/
-.vscode/
-*.swp
-*.swo
-
