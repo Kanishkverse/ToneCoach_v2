@@ -1,0 +1,8 @@
+Flask>=2.0.1
+Flask-Cors>=3.0.10
+numpy>=1.21.0
+librosa>=0.8.1
+pydub>=0.25.1
+SpeechRecognition>=3.8.1
+scipy>=1.5.0,<2.0.0
+webrtcvad>=2.0.10

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToneCoach - Emotional Intelligence for Public Speaking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="app-title">
+                <h1>ToneCoach</h1>
+                <p class="subtitle">Emotional Intelligence for Public Speaking</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="visualizer-container">
+                <div class="visualizer-label">Audio Waveform</div>
+                <canvas id="audioVisualizer"></canvas>
+            </div>
+
+            <div class="controls">
+                <button id="recordButton" class="btn primary">
+                    <i class="fas fa-microphone"></i> Start Recording
+                </button>
+                <button id="stopButton" class="btn secondary" disabled>
+                    <i class="fas fa-stop"></i> Stop Recording
+                </button>
+                <button id="downloadButton" class="btn tertiary" disabled>
+                    <i class="fas fa-download"></i> Download
+                </button>
+            </div>
+
+            <div class="settings-panel">
+                <h3>
+                    Settings
+                    <button id="toggleSettings">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </h3>
+                <div class="settings-content" id="settingsContent">
+                    <div class="settings-group">
+                        <label for="analysisLevel">Analysis Level</label>
+                        <select id="analysisLevel" class="form-select">
+                            <option value="basic">Basic Analysis</option>
+                            <option value="detailed" selected>Detailed Analysis</option>
+                            <option value="advanced">Advanced Analysis (AI-Powered)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <label class="form-label">Voice Cloning</label>
+                        <div class="switch-container">
+                            <label class="switch">
+                                <input type="checkbox" id="voiceCloning">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="switch-label">Enable Voice Cloning</span>
+                        </div>
+                        <small class="text-muted">Uses AI to demonstrate improved speech in your own voice</small>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <label class="form-label">Visualization Style</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="visualizationStyle" id="waveform" checked>
+                            <label class="form-check-label" for="waveform">Waveform</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="visualizationStyle" id="frequencyBars">
+                            <label class="form-check-label" for="frequencyBars">Frequency Bars</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="analysisContainer" class="analysis-container hidden">
+                <h2>Speech Analysis</h2>
+                
+                <div class="metrics-container">
+                    <div class="metric-card" style="--animation-order: 1">
+                        <i class="fas fa-clock icon"></i>
+                        <h3>Duration</h3>
+                        <p id="duration">0:00</p>
+                    </div>
+                    
+                    <div class="metric-card" style="--animation-order: 2">
+                        <i class="fas fa-tachometer-alt icon"></i>
+                        <h3>Speaking Rate</h3>
+                        <p id="speakingRate">0 WPM</p>
+                        <div class="tooltip">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="tooltip-text">Words per minute. Ideal range is 120-160 WPM.</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card" style="--animation-order: 3">
+                        <i class="fas fa-wave-square icon"></i>
+                        <h3>Pitch Variation</h3>
+                        <p id="pitchVariation">Low</p>
+                        <div class="progress-container">
+                            <div class="progress-bar" id="pitchVariationBar" style="width: 30%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card" style="--animation-order: 4">
+                        <i class="fas fa-volume-up icon"></i>
+                        <h3>Energy</h3>
+                        <p id="energy">Medium</p>
+                        <div class="progress-container">
+                            <div class="progress-bar" id="energyBar" style="width: 60%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detailed-analysis">
+                    <h3>Emotion Analysis</h3>
+                    <div class="emotion-container">
+                        <span class="badge badge-primary" id="primaryEmotion">Neutral</span>
+                        <span class="badge badge-secondary" id="secondaryEmotion">Confident</span>
+                    </div>
+                    
+                    <h3 class="mt-4">Speech Pattern</h3>
+                    <div class="chart-container">
+                        <canvas id="speechPatternChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="transcript-container">
+                    <h3>Transcript</h3>
+                    <div id="transcript">Your speech transcript will appear here after recording.</div>
+                </div>
+                
+                <div class="feedback-container">
+                    <h3>
+                        <i class="fas fa-robot"></i>
+                        AI Feedback
+                    </h3>
+                    <p id="aiFeedback">Record your speech to receive personalized feedback based on advanced analysis of your tone, pace, and expressiveness.</p>
+                </div>
+                
+                <div class="action-container mt-4">
+                    <button id="improveButton" class="btn primary" disabled>
+                        <i class="fas fa-magic"></i> Hear Improved Version
+                    </button>
+                    <button id="compareSpeechButton" class="btn secondary" disabled>
+                        <i class="fas fa-exchange-alt"></i> Compare
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading hidden" id="loadingIndicator">
+        <div class="spinner"></div>
+        <p>Analyzing your speech patterns...</p>
+    </div>
+    
+    <div class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 ToneCoach - Emotional Intelligence for Public Speaking</p>
+                <p class="mt-2">Developed by Kanishka Samrat Kolakaluri, Anurag Kopila, and Kaushik Reddy ChinnapuReddy</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <!-- Main application script -->
+    <script src="app.js"></script>
+</body>
+</html>
