@@ -1,60 +1,27 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
-import tempfile
-import traceback
+from utils.emotion_detection import predict_emotion
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:8000"}}, supports_credentials=True)
 
-# Configure CORS properly
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
-
-@app.route('/', methods=['GET'])
-def home():
-    """Root endpoint to check if API is running"""
-    return jsonify({
-        "status": "success",
-        "message": "ToneCoach API is running",
-        "version": "1.0.0"
-    })
 
 @app.route('/analyze', methods=['POST', 'OPTIONS'])
-def analyze_speech():
-    """Analyze speech audio and return detailed metrics"""
-    # Handle preflight OPTIONS request
+def analyze():
     if request.method == 'OPTIONS':
-        response = jsonify({'status': 'success'})
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-        response.headers.add('Access-Control-Allow-Methods', 'POST')
-        return response
-        
-    if 'audio' not in request.files:
+        return '', 204
+
+    file = request.files.get('audio')
+    if not file:
         return jsonify({'error': 'No audio file provided'}), 400
-    
-    audio_file = request.files['audio']
-    analysis_level = request.form.get('level', 'detailed')
-    
-    # Return a simplified analysis for testing
-    simple_analysis = {
-        'duration': 10.5,
-        'speaking_rate': 145,
-        'pitch_variation': 'Medium',
-        'energy_level': 'Medium',
-        'transcript': 'This is a sample transcript.',
-        'emotion': 'Neutral',
-        'feedback': 'This is a placeholder feedback. Your speech seems good!',
-        'pattern_data': {
-            'labels': list(range(1, 11)),
-            'pitchData': [50, 55, 60, 65, 70, 65, 60, 55, 50, 45],
-            'energyData': [30, 35, 40, 45, 50, 55, 50, 45, 40, 35]
-        }
-    }
-    
-    # Set CORS headers in the response
-    response = jsonify(simple_analysis)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+
+    audio_path = os.path.join(os.getcwd(), "temp_audio.wav") # Temporary path for saving audio
+    file.save(audio_path)
+
+    emotion = predict_emotion(audio_path)
+
+    return jsonify({'emotion': emotion})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
