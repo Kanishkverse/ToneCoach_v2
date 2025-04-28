@@ -369,54 +369,30 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Analyze audio with backend API
     // Analyze audio with backend API
-    async function analyzeAudio(audioBlob, level) {
+    async function analyzeAudio(audioBlob) {
+        console.log('Sending audio for analysis...');
+        
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'recording.wav'); 
+        // 👆 IMPORTANT: specify a filename like 'recording.wav'
+      
         try {
-            // Create form data with audio file
-            const formData = new FormData();
-            formData.append('audio', audioBlob, 'recording.wav');
-            formData.append('level', level);
-            
-            console.log("Sending audio for analysis...");
-            
-            // Add a timeout to the fetch request
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30-second timeout
-            
-            // Send to backend for analysis
-            const response = await fetch('http://localhost:5000/analyze', {
-                method: 'POST',
-                body: formData,
-                signal: controller.signal,
-                // Explicitly disable credentials to avoid CORS preflight issues
-                credentials: 'omit',
-                mode: 'cors'
-            });
-            
-            clearTimeout(timeoutId); // Clear the timeout
-            
-            console.log("Response received:", response.status);
-            
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error("Server error response:", errorText);
-                throw new Error(`Server error: ${response.status}`);
-            }
-            
-            const analysisData = await response.json();
-            console.log("Analysis data received:", analysisData);
-            displayAnalysisResults(analysisData);
-            
+          const response = await fetch('http://127.0.0.1:5000/analyze', {
+            method: 'POST',
+            body: formData,
+            // ⚠️ DO NOT manually add 'Content-Type' here!
+            // browser will automatically add correct multipart/form-data with boundary
+          });
+      
+          if (!response.ok) throw new Error('Server error');
+      
+          const result = await response.json();
+          console.log('Analysis result:', result);
         } catch (error) {
-            console.error('Error analyzing audio:', error);
-            
-            // If API fails, still show basic analysis
-            const recordingDuration = (Date.now() - recordingStartTime) / 1000;
-            displayBasicAnalysis(recordingDuration);
-            
-            // Hide loading indicator in case of error
-            loadingIndicator.classList.add('hidden');
+          console.error('Error analyzing audio:', error);
         }
-    }
+      }
+      
     
     // Display analysis results from API
     function displayAnalysisResults(data) {
